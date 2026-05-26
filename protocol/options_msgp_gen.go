@@ -3,221 +3,67 @@
 package protocol
 
 import (
-	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 	"github.com/tinylib/msgp/msgp"
 )
 
 // DecodeMsg implements msgp.Decodable
 func (z *CredentialParameter) DecodeMsg(dc *msgp.Reader) (err error) {
-	var field []byte
-	_ = field
-	var zb0001 uint32
-	zb0001, err = dc.ReadMapHeader()
-	if err != nil {
-		err = msgp.WrapError(err)
-		return
-	}
-	var zb0001Mask uint8 /* 2 bits */
-	_ = zb0001Mask
-	for zb0001 > 0 {
-		zb0001--
-		field, err = dc.ReadMapKeyPtr()
-		if err != nil {
-			err = msgp.WrapError(err)
-			return
-		}
-		switch msgp.UnsafeString(field) {
-		case "typ":
-			{
-				var zb0002 string
-				zb0002, err = dc.ReadString()
-				if err != nil {
-					err = msgp.WrapError(err, "Type")
-					return
-				}
-				z.Type = CredentialType(zb0002)
-			}
-			zb0001Mask |= 0x1
-		case "alg":
-			{
-				var zb0003 int
-				zb0003, err = dc.ReadInt()
-				if err != nil {
-					err = msgp.WrapError(err, "Algorithm")
-					return
-				}
-				z.Algorithm = webauthncose.COSEAlgorithmIdentifier(zb0003)
-			}
-			zb0001Mask |= 0x2
-		default:
-			err = dc.Skip()
-			if err != nil {
-				err = msgp.WrapError(err)
-				return
-			}
-		}
-	}
-	// Clear omitted fields.
-	if zb0001Mask != 0x3 {
-		if (zb0001Mask & 0x1) == 0 {
-			z.Type = ""
-		}
-		if (zb0001Mask & 0x2) == 0 {
-			z.Algorithm = 0
-		}
-	}
-	return
+	_ = "STUB: not implemented"
+	return nil
 }
+
+/* 2 bits */
+
+// Clear omitted fields.
 
 // EncodeMsg implements msgp.Encodable
 func (z CredentialParameter) EncodeMsg(en *msgp.Writer) (err error) {
+	_ = "STUB: not implemented"
 	// check for omitted fields
-	zb0001Len := uint32(2)
-	var zb0001Mask uint8 /* 2 bits */
-	_ = zb0001Mask
-	if z.Type == "" {
-		zb0001Len--
-		zb0001Mask |= 0x1
-	}
-	if z.Algorithm == 0 {
-		zb0001Len--
-		zb0001Mask |= 0x2
-	}
-	// variable map header, size zb0001Len
-	err = en.Append(0x80 | uint8(zb0001Len))
-	if err != nil {
-		return
-	}
-
-	// skip if no fields are to be emitted
-	if zb0001Len != 0 {
-		if (zb0001Mask & 0x1) == 0 { // if not omitted
-			// write "typ"
-			err = en.Append(0xa3, 0x74, 0x79, 0x70)
-			if err != nil {
-				return
-			}
-			err = en.WriteString(string(z.Type))
-			if err != nil {
-				err = msgp.WrapError(err, "Type")
-				return
-			}
-		}
-		if (zb0001Mask & 0x2) == 0 { // if not omitted
-			// write "alg"
-			err = en.Append(0xa3, 0x61, 0x6c, 0x67)
-			if err != nil {
-				return
-			}
-			err = en.WriteInt(int(z.Algorithm))
-			if err != nil {
-				err = msgp.WrapError(err, "Algorithm")
-				return
-			}
-		}
-	}
-	return
+	return nil
 }
+
+/* 2 bits */
+
+// variable map header, size zb0001Len
+
+// skip if no fields are to be emitted
+
+// if not omitted
+// write "typ"
+
+// if not omitted
+// write "alg"
 
 // MarshalMsg implements msgp.Marshaler
 func (z CredentialParameter) MarshalMsg(b []byte) (o []byte, err error) {
-	o = msgp.Require(b, z.Msgsize())
-	// check for omitted fields
-	zb0001Len := uint32(2)
-	var zb0001Mask uint8 /* 2 bits */
-	_ = zb0001Mask
-	if z.Type == "" {
-		zb0001Len--
-		zb0001Mask |= 0x1
-	}
-	if z.Algorithm == 0 {
-		zb0001Len--
-		zb0001Mask |= 0x2
-	}
-	// variable map header, size zb0001Len
-	o = append(o, 0x80|uint8(zb0001Len))
+	_ = "STUB: not implemented"
+	return nil, nil
 
-	// skip if no fields are to be emitted
-	if zb0001Len != 0 {
-		if (zb0001Mask & 0x1) == 0 { // if not omitted
-			// string "typ"
-			o = append(o, 0xa3, 0x74, 0x79, 0x70)
-			o = msgp.AppendString(o, string(z.Type))
-		}
-		if (zb0001Mask & 0x2) == 0 { // if not omitted
-			// string "alg"
-			o = append(o, 0xa3, 0x61, 0x6c, 0x67)
-			o = msgp.AppendInt(o, int(z.Algorithm))
-		}
-	}
-	return
+	// check for omitted fields
 }
+
+/* 2 bits */
+
+// variable map header, size zb0001Len
+
+// skip if no fields are to be emitted
+
+// if not omitted
+// string "typ"
+
+// if not omitted
+// string "alg"
 
 // UnmarshalMsg implements msgp.Unmarshaler
 func (z *CredentialParameter) UnmarshalMsg(bts []byte) (o []byte, err error) {
-	var field []byte
-	_ = field
-	var zb0001 uint32
-	zb0001, bts, err = msgp.ReadMapHeaderBytes(bts)
-	if err != nil {
-		err = msgp.WrapError(err)
-		return
-	}
-	var zb0001Mask uint8 /* 2 bits */
-	_ = zb0001Mask
-	for zb0001 > 0 {
-		zb0001--
-		field, bts, err = msgp.ReadMapKeyZC(bts)
-		if err != nil {
-			err = msgp.WrapError(err)
-			return
-		}
-		switch msgp.UnsafeString(field) {
-		case "typ":
-			{
-				var zb0002 string
-				zb0002, bts, err = msgp.ReadStringBytes(bts)
-				if err != nil {
-					err = msgp.WrapError(err, "Type")
-					return
-				}
-				z.Type = CredentialType(zb0002)
-			}
-			zb0001Mask |= 0x1
-		case "alg":
-			{
-				var zb0003 int
-				zb0003, bts, err = msgp.ReadIntBytes(bts)
-				if err != nil {
-					err = msgp.WrapError(err, "Algorithm")
-					return
-				}
-				z.Algorithm = webauthncose.COSEAlgorithmIdentifier(zb0003)
-			}
-			zb0001Mask |= 0x2
-		default:
-			bts, err = msgp.Skip(bts)
-			if err != nil {
-				err = msgp.WrapError(err)
-				return
-			}
-		}
-	}
-	// Clear omitted fields.
-	if zb0001Mask != 0x3 {
-		if (zb0001Mask & 0x1) == 0 {
-			z.Type = ""
-		}
-		if (zb0001Mask & 0x2) == 0 {
-			z.Algorithm = 0
-		}
-	}
-	o = bts
-	return
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
+/* 2 bits */
+
+// Clear omitted fields.
+
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
-func (z CredentialParameter) Msgsize() (s int) {
-	s = 1 + 4 + msgp.StringPrefixSize + len(string(z.Type)) + 4 + msgp.IntSize
-	return
-}
+func (z CredentialParameter) Msgsize() (s int) { _ = "STUB: not implemented"; return 0 }

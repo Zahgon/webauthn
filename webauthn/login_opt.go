@@ -24,18 +24,16 @@ import "github.com/go-webauthn/webauthn/protocol"
 //
 // Specification: §13.4.3. Cryptographic Challenges (https://www.w3.org/TR/webauthn/#sctn-cryptographic-challenges)
 func WithChallenge(challenge []byte) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.Challenge = challenge
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithLoginRelyingPartyID sets the Relying Party ID for this particular login.
 //
 // Specification: §5.5. Options for Assertion Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialrequestoptions-rpid)
 func WithLoginRelyingPartyID(id string) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.RelyingPartyID = id
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithAllowedCredentials adjusts the allowed credentials via a slice of [protocol.CredentialDescriptor] values,
@@ -45,18 +43,16 @@ func WithLoginRelyingPartyID(id string) LoginOption {
 //
 // Specification: §5.10.3. Credential Descriptor (https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialdescriptor)
 func WithAllowedCredentials(allowList []protocol.CredentialDescriptor) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.AllowedCredentials = allowList
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithUserVerification adjusts the user verification preference by providing a [protocol.UserVerificationRequirement].
 //
 // Specification: §5.5. Options for Assertion Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialrequestoptions-userverification)
 func WithUserVerification(userVerification protocol.UserVerificationRequirement) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.UserVerification = userVerification
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithAssertionPublicKeyCredentialHints adjusts the non-default hints for credential types to select during login by
@@ -66,18 +62,16 @@ func WithUserVerification(userVerification protocol.UserVerificationRequirement)
 //
 // Specification: §5.5. Options for Assertion Generation (https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialrequestoptions-hints)
 func WithAssertionPublicKeyCredentialHints(hints []protocol.PublicKeyCredentialHints) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.Hints = hints
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithAssertionExtensions adjusts the requested extensions by providing a [protocol.AuthenticationExtensions].
 //
 // Specification: §5.5. Options for Assertion Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialrequestoptions-extensions)
 func WithAssertionExtensions(extensions protocol.AuthenticationExtensions) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		cco.Extensions = extensions
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }
 
 // WithAppIdExtension automatically includes the specified appid if the AllowedCredentials contains a credential
@@ -85,17 +79,6 @@ func WithAssertionExtensions(extensions protocol.AuthenticationExtensions) Login
 //
 // Specification: §5.5. Options for Assertion Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialrequestoptions-extensions)
 func WithAppIdExtension(appid string) LoginOption {
-	return func(cco *protocol.PublicKeyCredentialRequestOptions) {
-		for _, credential := range cco.AllowedCredentials {
-			if credential.AttestationFormat == string(protocol.AttestationFormatFIDOUniversalSecondFactor) {
-				if cco.Extensions == nil {
-					cco.Extensions = map[string]any{}
-				}
-
-				cco.Extensions[protocol.ExtensionAppID] = appid
-
-				break
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return *new(LoginOption)
 }

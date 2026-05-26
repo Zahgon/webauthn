@@ -3,7 +3,6 @@ package metadata
 import (
 	"context"
 	"errors"
-	"reflect"
 	"time"
 
 	"github.com/google/uuid"
@@ -59,15 +58,7 @@ type PublicKeyCredentialParameters struct {
 
 type AuthenticatorAttestationTypes []AuthenticatorAttestationType
 
-func (t AuthenticatorAttestationTypes) HasBasicFull() bool {
-	for _, a := range t {
-		if a == BasicFull || a == AttCA {
-			return true
-		}
-	}
-
-	return false
-}
+func (t AuthenticatorAttestationTypes) HasBasicFull() bool { _ = "STUB: not implemented"; return false }
 
 // AuthenticatorAttestationType represents the attestation type supported by an authenticator. Each constant has a
 // case-sensitive string representation used in the authoritative metadata for FIDO authenticators.
@@ -219,31 +210,20 @@ var defaultUndesiredAuthenticatorStatus = [...]AuthenticatorStatus{
 
 // IsUndesiredAuthenticatorStatus returns whether the supplied authenticator status is desirable or not.
 func IsUndesiredAuthenticatorStatus(status AuthenticatorStatus) bool {
-	for _, s := range defaultUndesiredAuthenticatorStatus {
-		if s == status {
-			return true
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return false
 }
 
 // IsUndesiredAuthenticatorStatusSlice returns whether the supplied authenticator status is desirable or not.
 func IsUndesiredAuthenticatorStatusSlice(status AuthenticatorStatus, values []AuthenticatorStatus) bool {
-	for _, s := range values {
-		if s == status {
-			return true
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return false
 }
 
 // IsUndesiredAuthenticatorStatusMap returns whether the supplied authenticator status is desirable or not.
 func IsUndesiredAuthenticatorStatusMap(status AuthenticatorStatus, values map[AuthenticatorStatus]bool) bool {
-	_, ok := values[status]
-
-	return ok
+	_ = "STUB: not implemented"
+	return false
 }
 
 // AuthenticationAlgorithm represents the authentication algorithm supported by an authenticator.
@@ -334,37 +314,12 @@ type algKeyCose struct {
 }
 
 func algKeyCoseDictionary() func(AuthenticationAlgorithm) algKeyCose {
-	mapping := map[AuthenticationAlgorithm]algKeyCose{
-		ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES256, Curve: webauthncose.P256},
-		ALG_SIGN_SECP256R1_ECDSA_SHA256_DER: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES256, Curve: webauthncose.P256},
-		ALG_SIGN_RSASSA_PSS_SHA256_RAW:      {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgPS256},
-		ALG_SIGN_RSASSA_PSS_SHA256_DER:      {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgPS256},
-		ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES256K, Curve: webauthncose.Secp256k1},
-		ALG_SIGN_SECP256K1_ECDSA_SHA256_DER: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES256K, Curve: webauthncose.Secp256k1},
-		ALG_SIGN_RSASSA_PSS_SHA384_RAW:      {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgPS384},
-		ALG_SIGN_RSASSA_PSS_SHA512_RAW:      {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgPS512},
-		ALG_SIGN_RSASSA_PKCSV15_SHA256_RAW:  {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgRS256},
-		ALG_SIGN_RSASSA_PKCSV15_SHA384_RAW:  {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgRS384},
-		ALG_SIGN_RSASSA_PKCSV15_SHA512_RAW:  {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgRS512},
-		ALG_SIGN_RSASSA_PKCSV15_SHA1_RAW:    {KeyType: webauthncose.RSAKey, Algorithm: webauthncose.AlgRS1},
-		ALG_SIGN_SECP384R1_ECDSA_SHA384_RAW: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES384, Curve: webauthncose.P384},
-		ALG_SIGN_SECP521R1_ECDSA_SHA512_RAW: {KeyType: webauthncose.EllipticKey, Algorithm: webauthncose.AlgES512, Curve: webauthncose.P521},
-		ALG_SIGN_ED25519_EDDSA_SHA512_RAW:   {KeyType: webauthncose.OctetKey, Algorithm: webauthncose.AlgEdDSA, Curve: webauthncose.Ed25519},
-		ALG_SIGN_ED448_EDDSA_SHA512_RAW:     {KeyType: webauthncose.OctetKey, Algorithm: webauthncose.AlgEdDSA, Curve: webauthncose.Ed448},
-	}
-
-	return func(key AuthenticationAlgorithm) algKeyCose {
-		return mapping[key]
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func AlgKeyMatch(key algKeyCose, algs []AuthenticationAlgorithm) bool {
-	for _, alg := range algs {
-		if reflect.DeepEqual(algKeyCoseDictionary()(alg), key) {
-			return true
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return false
 }
 
@@ -402,10 +357,12 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	return e.Details
+	_ = "STUB: not implemented"
+
+	// Clock is an interface used to implement clock functionality in various metadata areas.
+	return ""
 }
 
-// Clock is an interface used to implement clock functionality in various metadata areas.
 type Clock interface {
 	// Now returns the current time.
 	Now() time.Time
@@ -415,6 +372,4 @@ type Clock interface {
 type RealClock struct{}
 
 // Now returns the current time.
-func (RealClock) Now() time.Time {
-	return time.Now()
-}
+func (RealClock) Now() time.Time { _ = "STUB: not implemented"; return *new(time.Time) }

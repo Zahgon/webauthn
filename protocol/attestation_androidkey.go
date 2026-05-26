@@ -1,14 +1,10 @@
 package protocol
 
 import (
-	"bytes"
 	"crypto/x509"
 	"encoding/asn1"
-	"fmt"
-	"time"
 
 	"github.com/go-webauthn/webauthn/metadata"
-	"github.com/go-webauthn/webauthn/protocol/webauthncose"
 )
 
 // attestationFormatValidationHandlerAndroidKey is the handler for the Android Key Attestation Statement Format.
@@ -34,122 +30,41 @@ import (
 //
 //nolint:gocyclo
 func attestationFormatValidationHandlerAndroidKey(att AttestationObject, clientDataHash []byte, _ metadata.Provider) (attestationType string, x5cs []any, err error) {
-	var (
-		alg int64
-		sig []byte
-		ok  bool
-	)
-
-	// Given the verification procedure inputs attStmt, authenticatorData and clientDataHash, the verification procedure is as follows:
-	// §8.4.1. Verify that attStmt is valid CBOR conforming to the syntax defined above and perform CBOR decoding on it to extract
-	// the contained fields.
-	// Get the alg value - A COSEAlgorithmIdentifier containing the identifier of the algorithm
-	// used to generate the attestation signature.
-	if alg, ok = att.AttStatement[stmtAlgorithm].(int64); !ok {
-		return "", nil, ErrAttestationFormat.WithDetails("Error retrieving alg value")
-	}
-
-	// Get the sig value - A byte string containing the attestation signature.
-	if sig, ok = att.AttStatement[stmtSignature].([]byte); !ok {
-		return "", nil, ErrAttestationFormat.WithDetails("Error retrieving sig value")
-	}
-
-	// §8.4.2. Verify that sig is a valid signature over the concatenation of authenticatorData and clientDataHash
-	// using the public key in the first certificate in x5c with the algorithm specified in alg.
-	var (
-		x5c   []any
-		certs []*x509.Certificate
-	)
-
-	if x5c, certs, err = attStatementParseX5CS(att.AttStatement, stmtX5C); err != nil {
-		return "", nil, err
-	}
-
-	if len(certs) == 0 {
-		return "", nil, ErrInvalidAttestation.WithDetails("No certificates in x5c")
-	}
-
-	credCert := certs[0]
-
-	if _, err = attStatementCertChainVerify(certs, attAndroidKeyHardwareRootsCertPool, true, time.Now().Add(time.Hour*8760).UTC()); err != nil {
-		return "", nil, ErrInvalidAttestation.WithDetails("Error validating x5c cert chain").WithError(err)
-	}
-
-	signatureData := append(att.RawAuthData, clientDataHash...) //nolint:gocritic // This is intentional.
-
-	if sigAlg := webauthncose.SigAlgFromCOSEAlg(webauthncose.COSEAlgorithmIdentifier(alg)); sigAlg == x509.UnknownSignatureAlgorithm {
-		return "", nil, ErrInvalidAttestation.WithDetails(fmt.Sprintf("Unsupported COSE alg: %d", alg))
-	} else if err = credCert.CheckSignature(sigAlg, signatureData, sig); err != nil {
-		return "", nil, ErrInvalidAttestation.WithDetails(fmt.Sprintf("Signature validation error: %+v", err)).WithError(err)
-	}
-
-	// Verify that the public key in the first certificate in x5c matches the credentialPublicKey in the attestedCredentialData in authenticatorData.
-	var attPublicKeyData webauthncose.EC2PublicKeyData
-	if attPublicKeyData, err = verifyAttestationECDSAPublicKeyMatch(att, credCert); err != nil {
-		return "", nil, err
-	}
-
-	var valid bool
-	if valid, err = attPublicKeyData.Verify(signatureData, sig); err != nil || !valid {
-		return "", nil, ErrInvalidAttestation.WithDetails(fmt.Sprintf("Error parsing public key: %+v", err)).WithError(err)
-	}
-
-	// §8.4.3. Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash.
-	// attCert.Extensions.
-	// As noted in §8.4.1 (https://www.w3.org/TR/webauthn/#key-attstn-cert-requirements) the Android Key Attestation
-	// certificate's android key attestation certificate extension data is identified by the OID
-	// "1.3.6.1.4.1.11129.2.1.17".
-	var attExtBytes []byte
-
-	for _, ext := range credCert.Extensions {
-		if ext.Id.Equal(oidExtensionAndroidKeystore) {
-			attExtBytes = ext.Value
-		}
-	}
-
-	if len(attExtBytes) == 0 {
-		return "", nil, ErrAttestationFormat.WithDetails("Attestation certificate extensions missing 1.3.6.1.4.1.11129.2.1.17")
-	}
-
-	decoded := keyDescription{}
-
-	if _, err = asn1.Unmarshal(attExtBytes, &decoded); err != nil {
-		return "", nil, ErrAttestationFormat.WithDetails("Unable to parse Android key attestation certificate extensions").WithError(err)
-	}
-
-	// Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash.
-	if !bytes.Equal(decoded.AttestationChallenge, clientDataHash) {
-		return "", nil, ErrAttestationFormat.WithDetails("Attestation challenge not equal to clientDataHash")
-	}
-
-	// The AuthorizationList.allApplications field is not present on either authorization list (softwareEnforced nor teeEnforced), since PublicKeyCredential MUST be scoped to the RP ID.
-	if decoded.SoftwareEnforced.AllApplications != nil || decoded.TeeEnforced.AllApplications != nil {
-		return "", nil, ErrAttestationFormat.WithDetails("Attestation certificate extensions contains all applications field")
-	}
-
-	// For the following, use only the teeEnforced authorization list if the RP wants to accept only keys from a trusted execution environment, otherwise use the union of teeEnforced and softwareEnforced.
-	// The value in the AuthorizationList.origin field is equal to KM_ORIGIN_GENERATED (which == 0).
-	if decoded.SoftwareEnforced.Origin != KM_ORIGIN_GENERATED || decoded.TeeEnforced.Origin != KM_ORIGIN_GENERATED {
-		return "", nil, ErrAttestationFormat.WithDetails("Attestation certificate extensions contains authorization list with origin not equal KM_ORIGIN_GENERATED")
-	}
-
-	// The value in the AuthorizationList.purpose field is equal to KM_PURPOSE_SIGN (which == 2).
-	if !contains(decoded.SoftwareEnforced.Purpose, KM_PURPOSE_SIGN) && !contains(decoded.TeeEnforced.Purpose, KM_PURPOSE_SIGN) {
-		return "", nil, ErrAttestationFormat.WithDetails("Attestation certificate extensions contains authorization list with purpose not equal KM_PURPOSE_SIGN")
-	}
-
-	return string(metadata.BasicFull), x5c, err
+	_ = "STUB: not implemented"
+	return "", nil, nil
 }
 
-func contains(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
+// Given the verification procedure inputs attStmt, authenticatorData and clientDataHash, the verification procedure is as follows:
+// §8.4.1. Verify that attStmt is valid CBOR conforming to the syntax defined above and perform CBOR decoding on it to extract
+// the contained fields.
+// Get the alg value - A COSEAlgorithmIdentifier containing the identifier of the algorithm
+// used to generate the attestation signature.
 
-	return false
-}
+// Get the sig value - A byte string containing the attestation signature.
+
+// §8.4.2. Verify that sig is a valid signature over the concatenation of authenticatorData and clientDataHash
+// using the public key in the first certificate in x5c with the algorithm specified in alg.
+
+//nolint:gocritic // This is intentional.
+
+// Verify that the public key in the first certificate in x5c matches the credentialPublicKey in the attestedCredentialData in authenticatorData.
+
+// §8.4.3. Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash.
+// attCert.Extensions.
+// As noted in §8.4.1 (https://www.w3.org/TR/webauthn/#key-attstn-cert-requirements) the Android Key Attestation
+// certificate's android key attestation certificate extension data is identified by the OID
+// "1.3.6.1.4.1.11129.2.1.17".
+
+// Verify that the attestationChallenge field in the attestation certificate extension data is identical to clientDataHash.
+
+// The AuthorizationList.allApplications field is not present on either authorization list (softwareEnforced nor teeEnforced), since PublicKeyCredential MUST be scoped to the RP ID.
+
+// For the following, use only the teeEnforced authorization list if the RP wants to accept only keys from a trusted execution environment, otherwise use the union of teeEnforced and softwareEnforced.
+// The value in the AuthorizationList.origin field is equal to KM_ORIGIN_GENERATED (which == 0).
+
+// The value in the AuthorizationList.purpose field is equal to KM_PURPOSE_SIGN (which == 2).
+
+func contains(s []int, e int) bool { _ = "STUB: not implemented"; return false }
 
 type keyDescription struct {
 	AttestationVersion       int

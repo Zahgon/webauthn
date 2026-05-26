@@ -1,7 +1,6 @@
 package webauthn
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,15 +11,7 @@ import (
 
 // New creates a new [WebAuthn] instance from the provided [Config]. The configuration is validated before the
 // instance is returned.
-func New(config *Config) (*WebAuthn, error) {
-	if err := config.validate(); err != nil {
-		return nil, fmt.Errorf(errFmtConfigValidate, err)
-	}
-
-	return &WebAuthn{
-		config,
-	}, nil
-}
+func New(config *Config) (*WebAuthn, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // WebAuthn is the primary interface of this package. It provides methods to begin and finish both registration and
 // login ceremonies. Create an instance using [New] and then call the appropriate Begin/Finish methods for your
@@ -133,82 +124,40 @@ type TimeoutConfig struct {
 }
 
 // Validate that the config flags in Config are properly set.
-func (config *Config) validate() (err error) {
-	if config.validated {
-		return nil
-	}
-
-	if len(config.RPID) != 0 {
-		if err = protocol.ValidateRPID(config.RPID); err != nil {
-			return fmt.Errorf(errFmtFieldNotValidDomainString, "RPID", err)
-		}
-	}
-
-	defaultTimeoutConfig := defaultTimeout
-	defaultTimeoutUVDConfig := defaultTimeoutUVD
-
-	if config.Timeouts.Login.Timeout.Milliseconds() == 0 {
-		config.Timeouts.Login.Timeout = defaultTimeoutConfig
-	}
-
-	if config.Timeouts.Login.TimeoutUVD.Milliseconds() == 0 {
-		config.Timeouts.Login.TimeoutUVD = defaultTimeoutUVDConfig
-	}
-
-	if config.Timeouts.Registration.Timeout.Milliseconds() == 0 {
-		config.Timeouts.Registration.Timeout = defaultTimeoutConfig
-	}
-
-	if config.Timeouts.Registration.TimeoutUVD.Milliseconds() == 0 {
-		config.Timeouts.Registration.TimeoutUVD = defaultTimeoutUVDConfig
-	}
-
-	if len(config.RPOrigins) == 0 {
-		return fmt.Errorf("must provide at least one value to the 'RPOrigins' field")
-	}
-
-	if config.RPTopOriginVerificationMode == protocol.TopOriginDefaultVerificationMode {
-		config.RPTopOriginVerificationMode = protocol.TopOriginExplicitVerificationMode
-	}
-
-	if config.Filtering != nil {
-		if len(config.Filtering.PermittedAAGUIDs) > 0 && len(config.Filtering.ProhibitedAAGUIDs) > 0 {
-			return fmt.Errorf("cannot set both 'PermittedAAGUIDs' and 'ProhibitedAAGUIDs' in the filtering config")
-		}
-	}
-
-	config.validated = true
-
-	return nil
-}
+func (config *Config) validate() (err error) { _ = "STUB: not implemented"; return nil }
 
 // GetRPID returns the configured Relying Party ID.
 func (c *Config) GetRPID() string {
-	return c.RPID
+	_ = "STUB: not implemented"
+
+	// GetOrigins returns the configured Relying Party Origins.
+	return ""
 }
 
-// GetOrigins returns the configured Relying Party Origins.
 func (c *Config) GetOrigins() []string {
-	return c.RPOrigins
+	_ = "STUB: not implemented"
+
+	// GetTopOrigins returns the configured Relying Party Top Origins.
+	return nil
 }
 
-// GetTopOrigins returns the configured Relying Party Top Origins.
-func (c *Config) GetTopOrigins() []string {
-	return c.RPTopOrigins
-}
+func (c *Config) GetTopOrigins() []string { _ = "STUB: not implemented"; return nil }
 
 // GetTopOriginVerificationMode returns the configured Top Origin verification mode.
 func (c *Config) GetTopOriginVerificationMode() protocol.TopOriginVerificationMode {
-	return c.RPTopOriginVerificationMode
+	_ = "STUB: not implemented"
+	return *new(protocol.TopOriginVerificationMode)
 }
 
 // GetMetaDataProvider returns the configured FIDO Metadata Service provider.
 func (c *Config) GetMetaDataProvider() metadata.Provider {
-	return c.MDS
+	_ = "STUB: not implemented"
+
+	// ConfigProvider is an interface that provides access to the WebAuthn [Config] values. This is useful for
+	// implementations that wish to provide configuration from alternative sources.
+	return *new(metadata.Provider)
 }
 
-// ConfigProvider is an interface that provides access to the WebAuthn [Config] values. This is useful for
-// implementations that wish to provide configuration from alternative sources.
 type ConfigProvider interface {
 	GetRPID() string
 	GetOrigins() []string

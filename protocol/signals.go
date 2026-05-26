@@ -3,23 +3,8 @@ package protocol
 // NewSignalAllAcceptedCredentials creates a new SignalAllAcceptedCredentials struct that can simply be encoded with
 // json.Marshal.
 func NewSignalAllAcceptedCredentials(rpid string, user AllAcceptedCredentialsUser) *SignalAllAcceptedCredentials {
-	if user == nil {
-		return nil
-	}
-
-	credentials := user.WebAuthnCredentialIDs()
-
-	ids := make([]URLEncodedBase64, len(credentials))
-
-	for i, id := range credentials {
-		ids[i] = id
-	}
-
-	return &SignalAllAcceptedCredentials{
-		AllAcceptedCredentialIDs: ids,
-		RPID:                     rpid,
-		UserID:                   user.WebAuthnID(),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // SignalAllAcceptedCredentials is a struct which represents the CDDL of the same name.

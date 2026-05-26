@@ -2,7 +2,6 @@ package memory
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 
@@ -11,25 +10,8 @@ import (
 
 // New returns a new memory Provider given a set of functional Option's.
 func New(opts ...Option) (provider metadata.Provider, err error) {
-	p := &Provider{
-		undesired:   metadata.DefaultUndesiredAuthenticatorStatuses(),
-		entry:       true,
-		anchors:     true,
-		status:      true,
-		attestation: true,
-	}
-
-	for _, opt := range opts {
-		if err = opt(p); err != nil {
-			return nil, err
-		}
-	}
-
-	if p.mds == nil {
-		return nil, fmt.Errorf("memory metadata provider has not been initialized with metadata")
-	}
-
-	return p, nil
+	_ = "STUB: not implemented"
+	return *new(metadata.Provider), nil
 }
 
 // Provider is a concrete implementation of the [metadata.Provider] that utilizes memory for validation. This provider is
@@ -47,45 +29,38 @@ type Provider struct {
 }
 
 func (p *Provider) GetEntry(ctx context.Context, aaguid uuid.UUID) (entry *metadata.Entry, err error) {
-	if p.mds == nil {
-		return nil, metadata.ErrNotInitialized
-	}
-
-	var ok bool
-
-	if entry, ok = p.mds[aaguid]; ok {
-		return entry, nil
-	}
-
+	_ = "STUB: not implemented"
 	return nil, nil
 }
 
 func (p *Provider) GetValidateEntry(ctx context.Context) (require bool) {
-	return p.entry
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (p *Provider) GetValidateEntryPermitZeroAAGUID(ctx context.Context) (skip bool) {
-	return p.entryPermitZero
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (p *Provider) GetValidateTrustAnchor(ctx context.Context) (validate bool) {
-	return p.anchors
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (p *Provider) GetValidateStatus(ctx context.Context) (validate bool) {
-	return p.status
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (p *Provider) GetValidateAttestationTypes(ctx context.Context) (validate bool) {
-	return p.attestation
+	_ = "STUB: not implemented"
+	return false
 }
 
 func (p *Provider) ValidateStatusReports(ctx context.Context, reports []metadata.StatusReport) (err error) {
-	if !p.status {
-		return nil
-	}
-
-	return metadata.ValidateStatusReports(reports, p.desired, p.undesired)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 var (

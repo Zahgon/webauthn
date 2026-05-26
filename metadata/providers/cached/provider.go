@@ -1,7 +1,6 @@
 package cached
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -12,40 +11,8 @@ import (
 // New returns a new cached Provider given a set of functional [Option]'s. This provider will download a new version and
 // save it to the configured file path if it doesn't exist or if it's out of date by default.
 func New(opts ...Option) (provider metadata.Provider, err error) {
-	p := &Provider{
-		update: true,
-		uri:    metadata.ProductionMDSURL,
-	}
-
-	for _, opt := range opts {
-		if err = opt(p); err != nil {
-			return nil, err
-		}
-	}
-
-	if p.name == "" {
-		return nil, fmt.Errorf("provider configured without setting a path for the cached file blob")
-	}
-
-	if p.newup == nil {
-		p.newup = defaultNew
-	}
-
-	if p.decoder == nil {
-		if p.decoder, err = metadata.NewDecoder(metadata.WithIgnoreEntryParsingErrors()); err != nil {
-			return nil, err
-		}
-	}
-
-	if p.clock == nil {
-		p.clock = &metadata.RealClock{}
-	}
-
-	if err = p.init(); err != nil {
-		return nil, err
-	}
-
-	return p, nil
+	_ = "STUB: not implemented"
+	return *new(metadata.Provider), nil
 }
 
 // Provider implements a [metadata.Provider] with a file-based cache.
@@ -114,33 +81,13 @@ func (p *Provider) init() (err error) {
 }
 
 func (p *Provider) parse(rc io.ReadCloser) (data *metadata.Metadata, err error) {
-	var payload *metadata.PayloadJSON
-
-	if payload, err = p.decoder.Decode(rc); err != nil {
-		return nil, err
-	}
-
-	if data, err = p.decoder.Parse(payload); err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (p *Provider) outdated(mds *metadata.Metadata) bool {
-	return p.update && p.clock.Now().After(mds.Parsed.NextUpdate)
-}
+func (p *Provider) outdated(mds *metadata.Metadata) bool { _ = "STUB: not implemented"; return false }
 
 func (p *Provider) get() (f io.ReadCloser, err error) {
-	if p.client == nil {
-		p.client = &http.Client{}
-	}
-
-	var res *http.Response
-
-	if res, err = p.client.Get(p.uri); err != nil {
-		return nil, err
-	}
-
-	return res.Body, nil
+	_ = "STUB: not implemented"
+	return *new(io.ReadCloser), nil
 }

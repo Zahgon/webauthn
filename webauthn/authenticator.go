@@ -35,11 +35,8 @@ type Authenticator struct {
 // string and boolean parameters. Use [protocol.ResidentKeyRequired] or [protocol.ResidentKeyNotRequired] for the rrk
 // parameter.
 func SelectAuthenticator(att string, rrk *bool, uv string) protocol.AuthenticatorSelection {
-	return protocol.AuthenticatorSelection{
-		AuthenticatorAttachment: protocol.AuthenticatorAttachment(att),
-		RequireResidentKey:      rrk,
-		UserVerification:        protocol.UserVerificationRequirement(uv),
-	}
+	_ = "STUB: not implemented"
+	return *new(protocol.AuthenticatorSelection)
 }
 
 // UpdateCounter updates the authenticator and either sets the clone warning value or the sign count.
@@ -56,12 +53,4 @@ func SelectAuthenticator(att string, rrk *bool, uv string) protocol.Authenticato
 //
 //	→ Less than or equal to the signature counter value stored in conjunction with credential’s id attribute.
 //	This is a signal that the authenticator may be cloned, see CloneWarning above for more information.
-func (a *Authenticator) UpdateCounter(authDataCount uint32) {
-	if authDataCount <= a.SignCount && (authDataCount != 0 || a.SignCount != 0) {
-		a.CloneWarning = true
-
-		return
-	}
-
-	a.SignCount = authDataCount
-}
+func (a *Authenticator) UpdateCounter(authDataCount uint32) { _ = "STUB: not implemented"; return }

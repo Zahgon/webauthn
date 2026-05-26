@@ -1,10 +1,7 @@
 package protocol
 
 import (
-	"crypto/subtle"
-	"fmt"
 	"net/url"
-	"strings"
 )
 
 // CollectedClientData represents the contextual bindings of both the WebAuthn Relying Party
@@ -84,23 +81,8 @@ const (
 
 // FullyQualifiedOrigin returns the origin per the HTML spec: (scheme)://(host)[:(port)].
 func FullyQualifiedOrigin(rawOrigin string) (fqOrigin string, err error) {
-	if strings.HasPrefix(rawOrigin, "android:apk-key-hash:") {
-		return rawOrigin, nil
-	}
-
-	var origin *url.URL
-
-	if origin, err = url.ParseRequestURI(rawOrigin); err != nil {
-		return "", err
-	}
-
-	if origin.Host == "" {
-		return "", fmt.Errorf("url '%s' does not have a host", rawOrigin)
-	}
-
-	origin.Path, origin.RawPath, origin.RawQuery, origin.User = "", "", "", nil
-
-	return origin.String(), nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 // Verify handles steps 3 through 6 of verifying the registering client data of a
@@ -113,93 +95,29 @@ func FullyQualifiedOrigin(rawOrigin string) (fqOrigin string, err error) {
 //
 //nolint:gocyclo
 func (c *CollectedClientData) Verify(storedChallenge string, ceremony CeremonyType, rpOrigins, rpTopOrigins []string, rpTopOriginsVerify TopOriginVerificationMode, allowCrossOrigin bool) (err error) {
+	_ = "STUB: not implemented"
 	// Registration Step 3. Verify that the value of C.type is webauthn.create.
-
-	// Assertion Step 7. Verify that the value of C.type is the string webauthn.get.
-	if c.Type != ceremony {
-		return ErrVerification.WithDetails("Error validating ceremony type").WithInfo(fmt.Sprintf("Expected Value: %s, Received: %s", ceremony, c.Type))
-	}
-
-	// Registration Step 4. Verify that the value of C.challenge matches the challenge
-	// that was sent to the authenticator in the create() call.
-
-	// Assertion Step 8. Verify that the value of C.challenge matches the challenge
-	// that was sent to the authenticator in the PublicKeyCredentialRequestOptions
-	// passed to the get() call.
-
-	challenge := c.Challenge
-	if subtle.ConstantTimeCompare([]byte(storedChallenge), []byte(challenge)) != 1 {
-		return ErrVerification.
-			WithDetails("Error validating challenge").
-			WithInfo(fmt.Sprintf("Expected b Value: %#v\nReceived b: %#v\n", storedChallenge, challenge))
-	}
-
-	// Registration Step 5 & Assertion Step 9. Verify that the value of C.origin matches
-	// the Relying Party's origin.
-
-	if !IsOriginInHaystack(c.Origin, rpOrigins) {
-		return ErrVerification.
-			WithDetails("Error validating origin").
-			WithInfo(fmt.Sprintf("Expected Values: %s, Received: %s", rpOrigins, c.Origin))
-	}
-
-	if !allowCrossOrigin && c.CrossOrigin {
-		return ErrVerification.
-			WithDetails("Error validating cross origin flag").
-			WithInfo("The cross origin flag is invalid due to the configuration.")
-	}
-
-	switch len(c.TopOrigin) {
-	case 0:
-		break
-	default:
-		if !c.CrossOrigin {
-			return ErrVerification.
-				WithDetails("Error validating topOrigin").
-				WithInfo("The topOrigin can't have values unless crossOrigin is true.")
-		}
-
-		var possibleTopOrigins []string
-
-		switch rpTopOriginsVerify {
-		case TopOriginExplicitVerificationMode:
-			possibleTopOrigins = rpTopOrigins
-		case TopOriginAutoVerificationMode:
-			possibleTopOrigins = make([]string, 0, len(rpTopOrigins)+len(rpOrigins))
-			possibleTopOrigins = append(possibleTopOrigins, rpTopOrigins...)
-			possibleTopOrigins = append(possibleTopOrigins, rpOrigins...)
-		case TopOriginImplicitVerificationMode:
-			possibleTopOrigins = rpOrigins
-		default:
-			return ErrNotImplemented.WithDetails("Error handling unknown Top Origin verification mode")
-		}
-
-		if !IsOriginInHaystack(c.TopOrigin, possibleTopOrigins) {
-			return ErrVerification.
-				WithDetails("Error validating top origin").
-				WithInfo(fmt.Sprintf("Expected Values: %s, Received: %s", possibleTopOrigins, c.TopOrigin))
-		}
-	}
-
-	// Registration Step 6 and Assertion Step 10. Verify that the value of C.tokenBinding.status
-	// matches the state of Token Binding for the TLS connection over which the assertion was
-	// obtained. If Token Binding was used on that TLS connection, also verify that C.tokenBinding.id
-	// matches the base64url encoding of the Token Binding ID for the connection.
-	if c.TokenBinding != nil {
-		if c.TokenBinding.Status == "" {
-			return ErrParsingData.WithDetails("Error decoding clientData, token binding present without status")
-		}
-
-		if c.TokenBinding.Status != Present && c.TokenBinding.Status != Supported && c.TokenBinding.Status != NotSupported {
-			return ErrParsingData.
-				WithDetails("Error decoding clientData, token binding present with invalid status").
-				WithInfo(fmt.Sprintf("Got: %s", c.TokenBinding.Status))
-		}
-	}
-	// Not yet fully implemented by the spec, browsers, and me.
-
 	return nil
 }
+
+// Assertion Step 7. Verify that the value of C.type is the string webauthn.get.
+
+// Registration Step 4. Verify that the value of C.challenge matches the challenge
+// that was sent to the authenticator in the create() call.
+
+// Assertion Step 8. Verify that the value of C.challenge matches the challenge
+// that was sent to the authenticator in the PublicKeyCredentialRequestOptions
+// passed to the get() call.
+
+// Registration Step 5 & Assertion Step 9. Verify that the value of C.origin matches
+// the Relying Party's origin.
+
+// Registration Step 6 and Assertion Step 10. Verify that the value of C.tokenBinding.status
+// matches the state of Token Binding for the TLS connection over which the assertion was
+// obtained. If Token Binding was used on that TLS connection, also verify that C.tokenBinding.id
+// matches the base64url encoding of the Token Binding ID for the connection.
+
+// Not yet fully implemented by the spec, browsers, and me.
 
 // TopOriginVerificationMode determines how the Relying Party validates the topOrigin field in
 // [CollectedClientData]. This is relevant for cross-origin iframe scenarios where the top-level browsing context's
@@ -254,68 +172,16 @@ const (
 //
 // See (Well-Known Uniform Resource Identifiers): https://datatracker.ietf.org/doc/html/rfc8615
 func IsOriginInHaystack(needle string, haystack []string) bool {
-	needleURI := parseOriginURI(needle)
-
-	if needleURI != nil {
-		for _, hay := range haystack {
-			if hayURI := parseOriginURI(hay); hayURI != nil {
-				if isOriginEqual(needleURI, hayURI) {
-					return true
-				}
-			}
-		}
-	} else {
-		for _, hay := range haystack {
-			if needle == hay {
-				return true
-			}
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return false
 }
 
-func isOriginEqual(a *url.URL, b *url.URL) bool {
-	if !strings.EqualFold(a.Scheme, b.Scheme) {
-		return false
-	}
+func isOriginEqual(a *url.URL, b *url.URL) bool { _ = "STUB: not implemented"; return false }
 
-	if !strings.EqualFold(a.Host, b.Host) {
-		return false
-	}
+func parseOriginURI(raw string) *url.URL { _ = "STUB: not implemented"; return nil }
 
-	return true
-}
+// We can ignore the error here because it's effectively not a FQDN if this fails.
 
-func parseOriginURI(raw string) *url.URL {
-	if !isPossibleFQDN(raw) {
-		return nil
-	}
+// Normalize the port if necessary.
 
-	// We can ignore the error here because it's effectively not a FQDN if this fails.
-	uri, _ := url.Parse(raw)
-
-	if uri == nil {
-		return nil
-	}
-
-	// Normalize the port if necessary.
-	switch uri.Scheme {
-	case "http":
-		if uri.Port() == "80" {
-			uri.Host = uri.Hostname()
-		}
-	case "https":
-		if uri.Port() == "443" {
-			uri.Host = uri.Hostname()
-		}
-	}
-
-	return uri
-}
-
-func isPossibleFQDN(raw string) bool {
-	normalized := strings.ToLower(raw)
-
-	return strings.HasPrefix(normalized, "http://") || strings.HasPrefix(normalized, "https://")
-}
+func isPossibleFQDN(raw string) bool { _ = "STUB: not implemented"; return false }

@@ -11,7 +11,6 @@ package mocks
 
 import (
 	context "context"
-	reflect "reflect"
 
 	metadata "github.com/go-webauthn/webauthn/metadata"
 	uuid "github.com/google/uuid"
@@ -32,111 +31,97 @@ type MockMetadataProviderMockRecorder struct {
 
 // NewMockMetadataProvider creates a new mock instance.
 func NewMockMetadataProvider(ctrl *gomock.Controller) *MockMetadataProvider {
-	mock := &MockMetadataProvider{ctrl: ctrl}
-	mock.recorder = &MockMetadataProviderMockRecorder{mock}
-	return mock
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockMetadataProvider) EXPECT() *MockMetadataProviderMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// GetEntry mocks base method.
+	return nil
 }
 
-// GetEntry mocks base method.
 func (m *MockMetadataProvider) GetEntry(ctx context.Context, aaguid uuid.UUID) (*metadata.Entry, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetEntry", ctx, aaguid)
-	ret0, _ := ret[0].(*metadata.Entry)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetEntry indicates an expected call of GetEntry.
 func (mr *MockMetadataProviderMockRecorder) GetEntry(ctx, aaguid any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntry", reflect.TypeOf((*MockMetadataProvider)(nil).GetEntry), ctx, aaguid)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetValidateAttestationTypes mocks base method.
 func (m *MockMetadataProvider) GetValidateAttestationTypes(ctx context.Context) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetValidateAttestationTypes", ctx)
-	ret0, _ := ret[0].(bool)
-	return ret0
+	_ = "STUB: not implemented"
+	return false
 }
 
 // GetValidateAttestationTypes indicates an expected call of GetValidateAttestationTypes.
 func (mr *MockMetadataProviderMockRecorder) GetValidateAttestationTypes(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidateAttestationTypes", reflect.TypeOf((*MockMetadataProvider)(nil).GetValidateAttestationTypes), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetValidateEntry mocks base method.
 func (m *MockMetadataProvider) GetValidateEntry(ctx context.Context) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetValidateEntry", ctx)
-	ret0, _ := ret[0].(bool)
-	return ret0
+	_ = "STUB: not implemented"
+	return false
 }
 
 // GetValidateEntry indicates an expected call of GetValidateEntry.
 func (mr *MockMetadataProviderMockRecorder) GetValidateEntry(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidateEntry", reflect.TypeOf((*MockMetadataProvider)(nil).GetValidateEntry), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetValidateEntryPermitZeroAAGUID mocks base method.
 func (m *MockMetadataProvider) GetValidateEntryPermitZeroAAGUID(ctx context.Context) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetValidateEntryPermitZeroAAGUID", ctx)
-	ret0, _ := ret[0].(bool)
-	return ret0
+	_ = "STUB: not implemented"
+	return false
 }
 
 // GetValidateEntryPermitZeroAAGUID indicates an expected call of GetValidateEntryPermitZeroAAGUID.
 func (mr *MockMetadataProviderMockRecorder) GetValidateEntryPermitZeroAAGUID(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidateEntryPermitZeroAAGUID", reflect.TypeOf((*MockMetadataProvider)(nil).GetValidateEntryPermitZeroAAGUID), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetValidateStatus mocks base method.
 func (m *MockMetadataProvider) GetValidateStatus(ctx context.Context) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetValidateStatus", ctx)
-	ret0, _ := ret[0].(bool)
-	return ret0
+	_ = "STUB: not implemented"
+	return false
 }
 
 // GetValidateStatus indicates an expected call of GetValidateStatus.
 func (mr *MockMetadataProviderMockRecorder) GetValidateStatus(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidateStatus", reflect.TypeOf((*MockMetadataProvider)(nil).GetValidateStatus), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetValidateTrustAnchor mocks base method.
 func (m *MockMetadataProvider) GetValidateTrustAnchor(ctx context.Context) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetValidateTrustAnchor", ctx)
-	ret0, _ := ret[0].(bool)
-	return ret0
+	_ = "STUB: not implemented"
+	return false
 }
 
 // GetValidateTrustAnchor indicates an expected call of GetValidateTrustAnchor.
 func (mr *MockMetadataProviderMockRecorder) GetValidateTrustAnchor(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetValidateTrustAnchor", reflect.TypeOf((*MockMetadataProvider)(nil).GetValidateTrustAnchor), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ValidateStatusReports mocks base method.
 func (m *MockMetadataProvider) ValidateStatusReports(ctx context.Context, reports []metadata.StatusReport) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateStatusReports", ctx, reports)
-	ret0, _ := ret[0].(error)
-	return ret0
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ValidateStatusReports indicates an expected call of ValidateStatusReports.
 func (mr *MockMetadataProviderMockRecorder) ValidateStatusReports(ctx, reports any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateStatusReports", reflect.TypeOf((*MockMetadataProvider)(nil).ValidateStatusReports), ctx, reports)
+	_ = "STUB: not implemented"
+	return nil
 }

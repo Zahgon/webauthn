@@ -6,18 +6,16 @@ import "github.com/go-webauthn/webauthn/protocol"
 //
 // Specification: §5.4. Parameters for Credential Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-pubkeycredparams)
 func WithCredentialParameters(credentialParams []protocol.CredentialParameter) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.Parameters = credentialParams
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithExclusions adjusts the non-default parameters regarding credentials to exclude from registration.
 //
 // Specification: §5.4. Parameters for Credential Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-excludecredentials)
 func WithExclusions(excludeList []protocol.CredentialDescriptor) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.CredentialExcludeList = excludeList
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithAuthenticatorSelection adjusts the non-default parameters regarding the authenticator to select during
@@ -27,9 +25,8 @@ func WithExclusions(excludeList []protocol.CredentialDescriptor) RegistrationOpt
 //
 // Specification: §5.4.4. Authenticator Selection Criteria (https://www.w3.org/TR/webauthn/#dictdef-authenticatorselectioncriteria)
 func WithAuthenticatorSelection(authenticatorSelection protocol.AuthenticatorSelection) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.AuthenticatorSelection = authenticatorSelection
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithResidentKeyRequirement sets both the resident key and require resident key protocol options.
@@ -38,16 +35,8 @@ func WithAuthenticatorSelection(authenticatorSelection protocol.AuthenticatorSel
 //
 // Specification: §5.4.4. Authenticator Selection Criteria (https://www.w3.org/TR/webauthn/#dictdef-authenticatorselectioncriteria)
 func WithResidentKeyRequirement(requirement protocol.ResidentKeyRequirement) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.AuthenticatorSelection.ResidentKey = requirement
-
-		switch requirement {
-		case protocol.ResidentKeyRequirementRequired:
-			cco.AuthenticatorSelection.RequireResidentKey = protocol.ResidentKeyRequired()
-		default:
-			cco.AuthenticatorSelection.RequireResidentKey = protocol.ResidentKeyNotRequired()
-		}
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithPublicKeyCredentialHints adjusts the non-default hints for credential types to select during registration.
@@ -56,9 +45,8 @@ func WithResidentKeyRequirement(requirement protocol.ResidentKeyRequirement) Reg
 //
 // Specification: §5.4. Parameters for Credential Generation (https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialcreationoptions-hints)
 func WithPublicKeyCredentialHints(hints []protocol.PublicKeyCredentialHints) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.Hints = hints
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithConveyancePreference adjusts the non-default parameters regarding whether the authenticator should attest to the
@@ -66,9 +54,8 @@ func WithPublicKeyCredentialHints(hints []protocol.PublicKeyCredentialHints) Reg
 //
 // Specification: §5.4. Parameters for Credential Generation (https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-attestation)
 func WithConveyancePreference(preference protocol.ConveyancePreference) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.Attestation = preference
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithAttestationFormats adjusts the non-default formats for credential types to select during registration.
@@ -77,9 +64,8 @@ func WithConveyancePreference(preference protocol.ConveyancePreference) Registra
 //
 // Specification: §5.4. Parameters for Credential Generation (https://www.w3.org/TR/webauthn-3/#dom-publickeycredentialcreationoptions-attestationformats)
 func WithAttestationFormats(formats []protocol.AttestationFormat) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.AttestationFormats = formats
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithExtensions adjusts the extension parameter in the registration options.
@@ -88,9 +74,8 @@ func WithAttestationFormats(formats []protocol.AttestationFormat) RegistrationOp
 //
 // Specification: §9. Extensions (https://www.w3.org/TR/webauthn/#webauthn-extensions)
 func WithExtensions(extension protocol.AuthenticationExtensions) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.Extensions = extension
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithAppIdExcludeExtension automatically includes the specified appid if the CredentialExcludeList contains a credential
@@ -102,31 +87,18 @@ func WithExtensions(extension protocol.AuthenticationExtensions) RegistrationOpt
 //
 // Specification: §10.1.2. FIDO AppID Exclusion Extension (https://www.w3.org/TR/webauthn/#sctn-appid-exclude-extension)
 func WithAppIdExcludeExtension(appid string) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		for _, credential := range cco.CredentialExcludeList {
-			if credential.AttestationFormat == string(protocol.AttestationFormatFIDOUniversalSecondFactor) {
-				if cco.Extensions == nil {
-					cco.Extensions = map[string]any{}
-				}
-
-				cco.Extensions[protocol.ExtensionAppIDExclude] = appid
-
-				break
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithRegistrationRelyingPartyID sets the relying party id for the registration.
 func WithRegistrationRelyingPartyID(id string) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.RelyingParty.ID = id
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }
 
 // WithRegistrationRelyingPartyName sets the relying party name for the registration.
 func WithRegistrationRelyingPartyName(name string) RegistrationOption {
-	return func(cco *protocol.PublicKeyCredentialCreationOptions) {
-		cco.RelyingParty.Name = name
-	}
+	_ = "STUB: not implemented"
+	return *new(RegistrationOption)
 }

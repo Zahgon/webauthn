@@ -5,35 +5,11 @@ package protocol
 // accepted; the W3C WebAuthn test vectors use AA, so rejecting user-assigned codes
 // would fail §16 conformance. Codes of the wrong length, wrong case, or containing
 // non-letters are rejected.
-func isISO3166Alpha2(code string) bool {
-	if _, ok := iso3166Alpha2Codes[code]; ok {
-		return true
-	}
-
-	return isISO3166Alpha2UserAssigned(code)
-}
+func isISO3166Alpha2(code string) bool { _ = "STUB: not implemented"; return false }
 
 // isISO3166Alpha2UserAssigned reports whether code is a user-assignable code per
 // ISO 3166-1 (AA, QM–QZ, XA–XZ, ZZ).
-func isISO3166Alpha2UserAssigned(code string) bool {
-	if len(code) != 2 {
-		return false
-	}
-
-	switch code {
-	case "AA", "ZZ":
-		return true
-	}
-
-	switch code[0] {
-	case 'Q':
-		return code[1] >= 'M' && code[1] <= 'Z'
-	case 'X':
-		return code[1] >= 'A' && code[1] <= 'Z'
-	}
-
-	return false
-}
+func isISO3166Alpha2UserAssigned(code string) bool { _ = "STUB: not implemented"; return false }
 
 var iso3166Alpha2Codes = map[string]struct{}{
 	"AD": {}, "AE": {}, "AF": {}, "AG": {}, "AI": {}, "AL": {}, "AM": {}, "AO": {},

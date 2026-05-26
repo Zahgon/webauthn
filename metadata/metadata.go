@@ -2,10 +2,7 @@ package metadata
 
 import (
 	"crypto/x509"
-	"fmt"
-	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,37 +11,7 @@ import (
 // Fetch creates a new HTTP client and gets the production metadata, decodes it, and parses it. This is an
 // instrumentation simplification that makes it easier to either just grab the latest metadata or for implementers to
 // see the rough process of retrieving it to implement any of their own logic.
-func Fetch() (metadata *Metadata, err error) {
-	var (
-		decoder *Decoder
-		payload *PayloadJSON
-		resp    *http.Response
-	)
-
-	client := &http.Client{}
-
-	if resp, err = client.Get(ProductionMDSURL); err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error occurred fetching metadata: status code %d", resp.StatusCode)
-	}
-
-	if decoder, err = NewDecoder(WithIgnoreEntryParsingErrors()); err != nil {
-		return nil, err
-	}
-
-	if payload, err = decoder.Decode(resp.Body); err != nil {
-		return nil, err
-	}
-
-	return decoder.Parse(payload)
-}
+func Fetch() (metadata *Metadata, err error) { _ = "STUB: not implemented"; return nil, nil }
 
 // Metadata represents a FIDO Metadata Service BLOB in either a fully parsed or partially parsed state.
 type Metadata struct {
@@ -55,17 +22,7 @@ type Metadata struct {
 	Unparsed []EntryError
 }
 
-func (m *Metadata) ToMap() (metadata map[uuid.UUID]*Entry) {
-	metadata = make(map[uuid.UUID]*Entry)
-
-	for _, entry := range m.Parsed.Entries {
-		if entry.AaGUID != uuid.Nil {
-			metadata[entry.AaGUID] = &entry
-		}
-	}
-
-	return metadata
-}
+func (m *Metadata) ToMap() (metadata map[uuid.UUID]*Entry) { _ = "STUB: not implemented"; return nil }
 
 // Parsed is a structure representing the Metadata BLOB Payload dictionary.
 //
@@ -107,28 +64,8 @@ type PayloadJSON struct {
 }
 
 func (j PayloadJSON) Parse() (payload Parsed, err error) {
-	var update time.Time
-
-	if update, err = time.Parse(time.DateOnly, j.NextUpdate); err != nil {
-		return payload, fmt.Errorf("error occurred parsing next update value '%s': %w", j.NextUpdate, err)
-	}
-
-	n := len(j.Entries)
-
-	entries := make([]Entry, n)
-
-	for i := 0; i < n; i++ {
-		if entries[i], err = j.Entries[i].Parse(); err != nil {
-			return payload, fmt.Errorf("error occurred parsing entry %d: %w", i, err)
-		}
-	}
-
-	return Parsed{
-		LegalHeader: j.LegalHeader,
-		Number:      j.Number,
-		NextUpdate:  update,
-		Entries:     entries,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(Parsed), nil
 }
 
 // Entry is a structure representing the Metadata BLOB Payload Entry dictionary.
@@ -203,71 +140,8 @@ type EntryJSON struct {
 }
 
 func (j EntryJSON) Parse() (entry Entry, err error) {
-	var aaguid uuid.UUID
-
-	if len(j.AaGUID) != 0 {
-		if aaguid, err = uuid.Parse(j.AaGUID); err != nil {
-			return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error parsing AAGUID: %w", j.AaGUID, err)
-		}
-	}
-
-	var statement Statement
-
-	if statement, err = j.MetadataStatement.Parse(); err != nil {
-		return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': %w", j.AaGUID, err)
-	}
-
-	var i, n int
-
-	n = len(j.BiometricStatusReports)
-
-	bsrs := make([]BiometricStatusReport, n)
-
-	for i = 0; i < n; i++ {
-		if bsrs[i], err = j.BiometricStatusReports[i].Parse(); err != nil {
-			return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error occurred parsing biometric status report %d: %w", j.AaGUID, i, err)
-		}
-	}
-
-	n = len(j.StatusReports)
-
-	srs := make([]StatusReport, n)
-
-	for i = 0; i < n; i++ {
-		if srs[i], err = j.StatusReports[i].Parse(); err != nil {
-			return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error occurred parsing status report %d: %w", j.AaGUID, i, err)
-		}
-	}
-
-	var change time.Time
-
-	if change, err = time.Parse(time.DateOnly, j.TimeOfLastStatusChange); err != nil {
-		return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error occurred parsing time of last status change value: %w", j.AaGUID, err)
-	}
-
-	var rogues *url.URL
-
-	if len(j.RogueListURL) != 0 {
-		if rogues, err = url.ParseRequestURI(j.RogueListURL); err != nil {
-			return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error occurred parsing rogue list URL value: %w", j.AaGUID, err)
-		}
-
-		if len(j.RogueListHash) == 0 {
-			return entry, fmt.Errorf("error occurred parsing metadata entry with AAGUID '%s': error occurred validating rogue list URL value: the rogue list hash was absent", j.AaGUID)
-		}
-	}
-
-	return Entry{
-		Aaid:                                 j.Aaid,
-		AaGUID:                               aaguid,
-		AttestationCertificateKeyIdentifiers: j.AttestationCertificateKeyIdentifiers,
-		MetadataStatement:                    statement,
-		BiometricStatusReports:               bsrs,
-		StatusReports:                        srs,
-		TimeOfLastStatusChange:               change,
-		RogueListURL:                         rogues,
-		RogueListHash:                        j.RogueListHash,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(Entry), nil
 }
 
 // Statement is a structure representing the Metadata Statement dictionary. Authenticator metadata statements are used
@@ -418,26 +292,8 @@ type Statement struct {
 }
 
 func (s *Statement) Verifier(x5cis []*x509.Certificate) (opts x509.VerifyOptions) {
-	roots := x509.NewCertPool()
-
-	for _, root := range s.AttestationRootCertificates {
-		roots.AddCert(root)
-	}
-
-	var intermediates *x509.CertPool
-
-	if len(x5cis) > 0 {
-		intermediates = x509.NewCertPool()
-
-		for _, x5c := range x5cis {
-			intermediates.AddCert(x5c)
-		}
-	}
-
-	return x509.VerifyOptions{
-		Roots:         roots,
-		Intermediates: intermediates,
-	}
+	_ = "STUB: not implemented"
+	return *new(x509.VerifyOptions)
 }
 
 // StatementJSON is the JSON representation of the [Statement] struct.
@@ -554,105 +410,8 @@ type StatementJSON struct {
 //
 //nolint:gocyclo
 func (j StatementJSON) Parse() (statement Statement, err error) {
-	var aaguid uuid.UUID
-
-	if len(j.AaGUID) != 0 {
-		if aaguid, err = uuid.Parse(j.AaGUID); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing AAGUID value: %w", j.Description, err)
-		}
-	}
-
-	n := len(j.AttestationRootCertificates)
-
-	certificates := make([]*x509.Certificate, n)
-
-	for i := 0; i < n; i++ {
-		if certificates[i], err = mdsParseX509Certificate(j.AttestationRootCertificates[i]); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing attestation root certificate %d value: %w", j.Description, i, err)
-		}
-	}
-
-	var (
-		icon, iconDark *url.URL
-
-		logoLight, logoDark *url.URL
-
-		cxpConfigURL *url.URL
-	)
-
-	if len(j.Icon) != 0 {
-		if icon, err = url.ParseRequestURI(j.Icon); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing icon value: %w", j.Description, err)
-		}
-	}
-
-	if len(j.IconDark) != 0 {
-		if iconDark, err = url.ParseRequestURI(j.IconDark); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing icon dark value: %w", j.Description, err)
-		}
-	}
-
-	if len(j.ProviderLogoLight) != 0 {
-		if logoLight, err = url.ParseRequestURI(j.ProviderLogoLight); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing provider logo light value: %w", j.Description, err)
-		}
-	}
-
-	if len(j.ProviderLogoDark) != 0 {
-		if logoDark, err = url.ParseRequestURI(j.ProviderLogoDark); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing provider logo dark value: %w", j.Description, err)
-		}
-	}
-
-	if len(j.CredentialExportProtocolConfigURL) != 0 {
-		if cxpConfigURL, err = url.ParseRequestURI(j.CredentialExportProtocolConfigURL); err != nil {
-			return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing cxp config url value: %w", j.Description, err)
-		}
-	}
-
-	var info AuthenticatorGetInfo
-
-	if info, err = j.AuthenticatorGetInfo.Parse(); err != nil {
-		return statement, fmt.Errorf("error occurred parsing statement with description '%s': error occurred parsing authenticator get info value: %w", j.Description, err)
-	}
-
-	return Statement{
-		LegalHeader:                          j.LegalHeader,
-		Aaid:                                 j.Aaid,
-		AaGUID:                               aaguid,
-		AttestationCertificateKeyIdentifiers: j.AttestationCertificateKeyIdentifiers,
-		FriendlyNames:                        j.FriendlyNames,
-		Description:                          j.Description,
-		AlternativeDescriptions:              j.AlternativeDescriptions,
-		AuthenticatorVersion:                 j.AuthenticatorVersion,
-		ProtocolFamily:                       j.ProtocolFamily,
-		Schema:                               j.Schema,
-		Upv:                                  j.Upv,
-		AuthenticationAlgorithms:             j.AuthenticationAlgorithms,
-		PublicKeyAlgAndEncodings:             j.PublicKeyAlgAndEncodings,
-		AttestationTypes:                     j.AttestationTypes,
-		UserVerificationDetails:              j.UserVerificationDetails,
-		KeyProtection:                        j.KeyProtection,
-		IsKeyRestricted:                      j.IsKeyRestricted,
-		IsFreshUserVerificationRequired:      j.IsFreshUserVerificationRequired,
-		MatcherProtection:                    j.MatcherProtection,
-		CryptoStrength:                       j.CryptoStrength,
-		AttachmentHint:                       j.AttachmentHint,
-		TcDisplay:                            j.TcDisplay,
-		TcDisplayContentType:                 j.TcDisplayContentType,
-		TcDisplayPNGCharacteristics:          j.TcDisplayPNGCharacteristics,
-		AttestationRootCertificates:          certificates,
-		EcdaaTrustAnchors:                    j.EcdaaTrustAnchors,
-		Icon:                                 icon,
-		IconDark:                             iconDark,
-		ProviderLogoLight:                    logoLight,
-		ProviderLogoDark:                     logoDark,
-		SupportedExtensions:                  j.SupportedExtensions,
-		KeyScope:                             j.KeyScope,
-		MultiDeviceCredentialSupport:         j.MultiDeviceCredentialSupport,
-		AuthenticatorGetInfo:                 info,
-		CredentialExportProtocolConfigURL:    cxpConfigURL,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(Statement), nil
 }
 
 // BiometricStatusReport is a structure representing the BiometricStatusReport dictionary. Contains the current
@@ -712,21 +471,8 @@ type BiometricStatusReportJSON struct {
 }
 
 func (j BiometricStatusReportJSON) Parse() (report BiometricStatusReport, err error) {
-	var effective time.Time
-
-	if effective, err = time.Parse(time.DateOnly, j.EffectiveDate); err != nil {
-		return report, fmt.Errorf("error occurred parsing effective date value: %w", err)
-	}
-
-	return BiometricStatusReport{
-		CertLevel:                        j.CertLevel,
-		Modality:                         j.Modality,
-		EffectiveDate:                    effective,
-		CertificationDescriptor:          j.CertificationDescriptor,
-		CertificateNumber:                j.CertificateNumber,
-		CertificationPolicyVersion:       j.CertificationPolicyVersion,
-		CertificationRequirementsVersion: j.CertificationRequirementsVersion,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(BiometricStatusReport), nil
 }
 
 // StatusReport is a structure representing the StatusReport dictionary. Contains an [AuthenticatorStatus] and additional
@@ -837,64 +583,8 @@ type StatusReportJSON struct {
 }
 
 func (j StatusReportJSON) Parse() (report StatusReport, err error) {
-	var (
-		certificate, batchCertificate *x509.Certificate
-	)
-
-	if len(j.Certificate) != 0 {
-		if certificate, err = mdsParseX509Certificate(j.Certificate); err != nil {
-			return report, fmt.Errorf("error occurred parsing certificate value: %w", err)
-		}
-	}
-
-	if len(j.BatchCertificate) != 0 {
-		if batchCertificate, err = mdsParseX509Certificate(j.BatchCertificate); err != nil {
-			return report, fmt.Errorf("error occurred parsing batch certificate value: %w", err)
-		}
-	}
-
-	var (
-		effective time.Time
-		sunset    *time.Time
-	)
-
-	if effective, err = time.Parse(time.DateOnly, j.EffectiveDate); err != nil {
-		return report, fmt.Errorf("error occurred parsing effective date value: %w", err)
-	}
-
-	if sunset, err = mdsParseTimePointer(time.DateOnly, j.SunsetDate); err != nil {
-		return report, fmt.Errorf("error occurred parsing sunset date value: %w", err)
-	}
-
-	var uri *url.URL
-
-	if len(j.URL) != 0 {
-		if uri, err = url.ParseRequestURI(j.URL); err != nil {
-			if !strings.HasPrefix(j.URL, "http") {
-				var e error
-				if uri, e = url.ParseRequestURI(fmt.Sprintf("https://%s", j.URL)); e != nil {
-					return report, fmt.Errorf("error occurred parsing URL value: %w", err)
-				}
-			}
-		}
-	}
-
-	return StatusReport{
-		Status:                           j.Status,
-		EffectiveDate:                    effective,
-		AuthenticatorVersion:             j.AuthenticatorVersion,
-		BatchCertificate:                 batchCertificate,
-		Certificate:                      certificate,
-		URL:                              uri,
-		CertificationDescriptor:          j.CertificationDescriptor,
-		CertificateNumber:                j.CertificateNumber,
-		CertificationPolicyVersion:       j.CertificationPolicyVersion,
-		CertificationProfiles:            j.CertificationProfiles,
-		CertificationRequirementsVersion: j.CertificationRequirementsVersion,
-		SunsetDate:                       sunset,
-		FIPSRevision:                     j.FIPSRevision,
-		FIPSPhysicalSecurityLevel:        j.FIPSPhysicalSecurityLevel,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(StatusReport), nil
 }
 
 // RogueListEntry is a structure representing the RogueListEntry dictionary.
@@ -1255,37 +945,8 @@ type AuthenticatorGetInfoJSON struct {
 }
 
 func (j AuthenticatorGetInfoJSON) Parse() (info AuthenticatorGetInfo, err error) {
-	var aaguid uuid.UUID
-
-	if len(j.AaGUID) != 0 {
-		if aaguid, err = uuid.Parse(j.AaGUID); err != nil {
-			return info, fmt.Errorf("error occurred parsing AAGUID value: %w", err)
-		}
-	}
-
-	return AuthenticatorGetInfo{
-		Versions:                         j.Versions,
-		Extensions:                       j.Extensions,
-		AaGUID:                           aaguid,
-		Options:                          j.Options,
-		MaxMsgSize:                       j.MaxMsgSize,
-		PivUvAuthProtocols:               j.PivUvAuthProtocols,
-		MaxCredentialCountInList:         j.MaxCredentialCountInList,
-		MaxCredentialIdLength:            j.MaxCredentialIdLength,
-		Transports:                       j.Transports,
-		Algorithms:                       j.Algorithms,
-		MaxSerializedLargeBlobArray:      j.MaxSerializedLargeBlobArray,
-		ForcePINChange:                   j.ForcePINChange,
-		MinPINLength:                     j.MinPINLength,
-		FirmwareVersion:                  j.FirmwareVersion,
-		MaxCredBlobLength:                j.MaxCredBlobLength,
-		MaxRPIDsForSetMinPINLength:       j.MaxRPIDsForSetMinPINLength,
-		PreferredPlatformUvAttempts:      j.PreferredPlatformUvAttempts,
-		UvModality:                       j.UvModality,
-		Certifications:                   j.Certifications,
-		RemainingDiscoverableCredentials: j.RemainingDiscoverableCredentials,
-		VendorPrototypeConfigCommands:    j.VendorPrototypeConfigCommands,
-	}, nil
+	_ = "STUB: not implemented"
+	return *new(AuthenticatorGetInfo), nil
 }
 
 // MDSGetEndpointsRequest is the request sent to the conformance metadata getEndpoints endpoint.
@@ -1305,11 +966,8 @@ type MDSGetEndpointsResponse struct {
 
 // DefaultUndesiredAuthenticatorStatuses returns a copy of the defaultUndesiredAuthenticatorStatus slice.
 func DefaultUndesiredAuthenticatorStatuses() []AuthenticatorStatus {
-	undesired := make([]AuthenticatorStatus, len(defaultUndesiredAuthenticatorStatus))
-
-	copy(undesired, defaultUndesiredAuthenticatorStatus[:])
-
-	return undesired
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EntryError represents an [EntryJSON] that failed to parse, along with the error that occurred.

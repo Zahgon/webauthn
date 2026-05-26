@@ -19,15 +19,12 @@ var ctap2CBOREncMode, _ = cbor.CTAP2EncOptions().EncMode()
 // following the CTAP2 canonical CBOR encoding form.
 // (https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#message-encoding)
 func Unmarshal(data []byte, v any) error {
+	_ = "STUB: not implemented"
 	// TODO (james-d-elliott): investigate the specific use case for Unmarshal vs UnmarshalFirst to determine the edge cases where this may be useful.
-	_, err := ctap2CBORDecMode.UnmarshalFirst(data, v)
-
-	return err
+	return nil
 }
 
 // Marshal encodes the value pointed to by v
 // following the CTAP2 canonical CBOR encoding form.
 // (https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#message-encoding)
-func Marshal(v any) ([]byte, error) {
-	return ctap2CBOREncMode.Marshal(v)
-}
+func Marshal(v any) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }

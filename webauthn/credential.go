@@ -1,11 +1,6 @@
 package webauthn
 
 import (
-	"bytes"
-	"crypto/sha256"
-	"encoding/json"
-	"fmt"
-
 	"github.com/go-webauthn/webauthn/metadata"
 	"github.com/go-webauthn/webauthn/protocol"
 )
@@ -20,28 +15,8 @@ import (
 // includes a populated [CredentialAttestation] containing the raw attestation data needed for future verification;
 // see the [CredentialAttestation] documentation for why these values must be persisted.
 func NewCredential(clientDataHash []byte, c *protocol.ParsedCredentialCreationData) (credential *Credential, err error) {
-	credential = &Credential{
-		ID:                c.Response.AttestationObject.AuthData.AttData.CredentialID,
-		PublicKey:         c.Response.AttestationObject.AuthData.AttData.CredentialPublicKey,
-		AttestationType:   c.Response.AttestationObject.Type,
-		AttestationFormat: c.Response.AttestationObject.Format,
-		Transport:         c.Response.Transports,
-		Flags:             NewCredentialFlags(c.Response.AttestationObject.AuthData.Flags),
-		Authenticator: Authenticator{
-			AAGUID:     c.Response.AttestationObject.AuthData.AttData.AAGUID,
-			SignCount:  c.Response.AttestationObject.AuthData.Counter,
-			Attachment: c.AuthenticatorAttachment,
-		},
-		Attestation: CredentialAttestation{
-			ClientDataJSON:     c.Raw.AttestationResponse.ClientDataJSON,
-			ClientDataHash:     clientDataHash,
-			AuthenticatorData:  c.Raw.AttestationResponse.AuthenticatorData,
-			PublicKeyAlgorithm: c.Raw.AttestationResponse.PublicKeyAlgorithm,
-			Object:             c.Raw.AttestationResponse.AttestationObject,
-		},
-	}
-
-	return credential, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Credential contains all needed information about a WebAuthn credential for storage. This struct is effectively the
@@ -100,40 +75,19 @@ type Credential struct {
 // is a recognised attestation FORMAT identifier (i.e. "packed", "tpm", "none"), the value is moved to
 // AttestationFormat and AttestationType is cleared so callers can re-derive the true attestation type by calling
 // [Credential.Verify]. Records that already carry an AttestationFormat are untouched.
-func (c *Credential) UnmarshalJSON(data []byte) error {
-	type credentialAlias Credential
-
-	var tmp credentialAlias
-
-	if err := json.Unmarshal(data, &tmp); err != nil {
-		return err
-	}
-
-	*c = Credential(tmp)
-
-	if c.AttestationFormat == "" && protocol.IsAttestationFormatString(c.AttestationType) {
-		c.AttestationFormat = c.AttestationType
-		c.AttestationType = ""
-	}
-
-	return nil
-}
+func (c *Credential) UnmarshalJSON(data []byte) error { _ = "STUB: not implemented"; return nil }
 
 // SignalUnknownCredential creates a struct that can easily be marshaled to JSON which indicates this is an unknown
 // Credential.
 func (c *Credential) SignalUnknownCredential(rpid string) *protocol.SignalUnknownCredential {
-	return c.Descriptor().SignalUnknownCredential(rpid)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Descriptor converts a [Credential] into a [protocol.CredentialDescriptor].
 func (c *Credential) Descriptor() (descriptor protocol.CredentialDescriptor) {
-	return protocol.CredentialDescriptor{
-		Type:              protocol.PublicKeyCredentialType,
-		CredentialID:      c.ID,
-		Transport:         c.Transport,
-		AttestationType:   c.AttestationType,
-		AttestationFormat: c.AttestationFormat,
-	}
+	_ = "STUB: not implemented"
+	return *new(protocol.CredentialDescriptor)
 }
 
 // Verify re-runs the full attestation verification for this credential against the given [metadata.Provider]. The
@@ -173,94 +127,17 @@ func (c *Credential) Descriptor() (descriptor protocol.CredentialDescriptor) {
 //
 // See [CredentialAttestation] for guidance on persisting these raw values securely.
 func (c *Credential) Verify(mds metadata.Provider) (err error) {
-	if mds == nil {
-		return fmt.Errorf("error verifying credential: the metadata provider must be provided but it's nil")
-	}
-
-	raw := c.toAuthenticatorAttestationResponse()
-
-	var attestation *protocol.ParsedAttestationResponse
-
-	if attestation, err = raw.Parse(); err != nil {
-		return fmt.Errorf("error verifying credential: error parsing attestation: %w", err)
-	}
-
-	if !bytes.Equal(c.PublicKey, attestation.AttestationObject.AuthData.AttData.CredentialPublicKey) {
-		return fmt.Errorf("error verifying credential: stored public key does not match the credential public key embedded in the attestation object")
-	}
-
-	clientDataHash := c.Attestation.ClientDataHash
-
-	if len(clientDataHash) == 0 {
-		sum := sha256.Sum256(c.Attestation.ClientDataJSON)
-
-		clientDataHash = sum[:]
-	}
-
-	if err = attestation.AttestationObject.VerifyAttestation(clientDataHash, mds); err != nil {
-		return fmt.Errorf("error verifying credential: error verifying attestation: %w", err)
-	}
-
-	if c.AttestationType == "" {
-		c.AttestationType = attestation.AttestationObject.Type
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // VerifyAttestationType is a cutdown version of Verify which only does the minimal verification to update the
 // AttestationType if it's unset. For full verification use Verify.
-func (c *Credential) VerifyAttestationType() (err error) {
-	if c.AttestationType != "" {
-		return nil
-	}
-
-	raw := c.toAuthenticatorAttestationResponse()
-
-	var attestation *protocol.ParsedAttestationResponse
-
-	if attestation, err = raw.Parse(); err != nil {
-		return fmt.Errorf("error verifying credential: error parsing attestation: %w", err)
-	}
-
-	if !bytes.Equal(c.PublicKey, attestation.AttestationObject.AuthData.AttData.CredentialPublicKey) {
-		return fmt.Errorf("error verifying credential: stored public key does not match the credential public key embedded in the attestation object")
-	}
-
-	clientDataHash := c.Attestation.ClientDataHash
-
-	if len(clientDataHash) == 0 {
-		sum := sha256.Sum256(c.Attestation.ClientDataJSON)
-
-		clientDataHash = sum[:]
-	}
-
-	if err = attestation.AttestationObject.VerifyAttestation(clientDataHash, nil); err != nil {
-		return fmt.Errorf("error verifying credential: error verifying attestation: %w", err)
-	}
-
-	c.AttestationType = attestation.AttestationObject.Type
-
-	return nil
-}
+func (c *Credential) VerifyAttestationType() (err error) { _ = "STUB: not implemented"; return nil }
 
 func (c *Credential) toAuthenticatorAttestationResponse() *protocol.AuthenticatorAttestationResponse {
-	raw := &protocol.AuthenticatorAttestationResponse{
-		AuthenticatorResponse: protocol.AuthenticatorResponse{
-			ClientDataJSON: c.Attestation.ClientDataJSON,
-		},
-		Transports:         make([]string, len(c.Transport)),
-		AuthenticatorData:  c.Attestation.AuthenticatorData,
-		PublicKey:          c.PublicKey,
-		PublicKeyAlgorithm: c.Attestation.PublicKeyAlgorithm,
-		AttestationObject:  c.Attestation.Object,
-	}
-
-	for i, transport := range c.Transport {
-		raw.Transports[i] = string(transport)
-	}
-
-	return raw
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Credentials is a decorator type which allows easily converting a [Credential] slice into a
@@ -270,13 +147,8 @@ type Credentials []Credential
 
 // CredentialDescriptors returns the [protocol.CredentialDescriptor] slice for this [Credentials] type.
 func (c Credentials) CredentialDescriptors() (descriptors []protocol.CredentialDescriptor) {
-	descriptors = make([]protocol.CredentialDescriptor, len(c))
-
-	for i, credential := range c {
-		descriptors[i] = credential.Descriptor()
-	}
-
-	return descriptors
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // NewCredentialFlags is a utility function that is used to derive the [Credential]'s Flags field given a
@@ -284,20 +156,16 @@ func (c Credentials) CredentialDescriptors() (descriptors []protocol.CredentialD
 // restore them appropriately for appropriate processing without concern that changes forced upon implementers by the
 // W3C will introduce breaking changes.
 func NewCredentialFlags(flags protocol.AuthenticatorFlags) CredentialFlags {
-	return CredentialFlags{
-		UserPresent:    flags.HasUserPresent(),
-		UserVerified:   flags.HasUserVerified(),
-		BackupEligible: flags.HasBackupEligible(),
-		BackupState:    flags.HasBackupState(),
-		raw:            flags,
-	}
+	_ = "STUB: not implemented"
+	return *new(CredentialFlags)
 }
 
 // CredentialFlagsFromMsgpByte reconstructs a [CredentialFlags] from the single-byte representation produced by
 // [CredentialFlags.MsgpByte]. It is intended for use by the msgp-generated serialization layer; normal callers
 // should prefer [NewCredentialFlags].
 func CredentialFlagsFromMsgpByte(b byte) CredentialFlags {
-	return NewCredentialFlags(protocol.AuthenticatorFlags(b))
+	_ = "STUB: not implemented"
+	return *new(CredentialFlags)
 }
 
 // CredentialFlags contains the boolean flags derived from the authenticator data during registration or login.
@@ -323,27 +191,31 @@ type CredentialFlags struct {
 // ProtocolValue returns the underlying [protocol.AuthenticatorFlags] provided this [CredentialFlags] was created using
 // NewCredentialFlags.
 func (f CredentialFlags) ProtocolValue() protocol.AuthenticatorFlags {
-	return f.raw
+	_ = "STUB: not implemented"
+
+	// MsgpByte returns the [CredentialFlags] encoded as a single byte, equivalent to the raw
+	// [protocol.AuthenticatorFlags] value. It is intended for use by the msgp-generated serialization layer (see the
+	// //msgp:shim directive in this file); normal callers should prefer [CredentialFlags.ProtocolValue].
+	return *new(protocol.AuthenticatorFlags)
 }
 
-// MsgpByte returns the [CredentialFlags] encoded as a single byte, equivalent to the raw
-// [protocol.AuthenticatorFlags] value. It is intended for use by the msgp-generated serialization layer (see the
-// //msgp:shim directive in this file); normal callers should prefer [CredentialFlags.ProtocolValue].
 func (f CredentialFlags) MsgpByte() byte {
-	return byte(f.raw)
+	_ = "STUB: not implemented"
+
+	// CredentialAttestation holds the raw attestation data from a registration ceremony. These values are intentionally
+	// stored in their original unparsed form rather than as parsed structures. This is critical because:
+	//
+	//   - It enables the [Credential] to be verified against the FIDO Metadata Service at a later date using
+	//     [Credential.Verify], even long after the registration ceremony has completed.
+	//   - The WebAuthn specification evolves over time, introducing new validation procedures. Preserving the raw data
+	//     ensures that credentials created today can be re-validated against future rules without requiring re-registration.
+	//   - Raw data serves as an auditable record of exactly what the authenticator and client provided during registration,
+	//     independent of how the library parsed it at that point in time.
+	//
+	// Implementers MUST persist all fields of this struct.
+	return 0
 }
 
-// CredentialAttestation holds the raw attestation data from a registration ceremony. These values are intentionally
-// stored in their original unparsed form rather than as parsed structures. This is critical because:
-//
-//   - It enables the [Credential] to be verified against the FIDO Metadata Service at a later date using
-//     [Credential.Verify], even long after the registration ceremony has completed.
-//   - The WebAuthn specification evolves over time, introducing new validation procedures. Preserving the raw data
-//     ensures that credentials created today can be re-validated against future rules without requiring re-registration.
-//   - Raw data serves as an auditable record of exactly what the authenticator and client provided during registration,
-//     independent of how the library parsed it at that point in time.
-//
-// Implementers MUST persist all fields of this struct.
 type CredentialAttestation struct {
 	// ClientDataJSON is the raw JSON-encoded client data from the registration response. This is the verbatim value
 	// provided by the client and is used to recompute the client data hash during later verification.

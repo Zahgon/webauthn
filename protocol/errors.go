@@ -15,34 +15,15 @@ type Error struct {
 	Err error `json:"-"`
 }
 
-func (e *Error) Error() string {
-	return e.Details
-}
+func (e *Error) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *Error) Unwrap() error {
-	return e.Err
-}
+func (e *Error) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (e *Error) WithDetails(details string) *Error {
-	err := *e
-	err.Details = details
+func (e *Error) WithDetails(details string) *Error { _ = "STUB: not implemented"; return nil }
 
-	return &err
-}
+func (e *Error) WithInfo(info string) *Error { _ = "STUB: not implemented"; return nil }
 
-func (e *Error) WithInfo(info string) *Error {
-	err := *e
-	err.DevInfo = info
-
-	return &err
-}
-
-func (e *Error) WithError(err error) *Error {
-	errCopy := *e
-	errCopy.Err = err
-
-	return &errCopy
-}
+func (e *Error) WithError(err error) *Error { _ = "STUB: not implemented"; return nil }
 
 // ErrorUnknownCredential is a special Error which signals the fact the provided credential is unknown. The reason this
 // specific error type is useful is so that the relying-party can send a signal to the Authenticator that the
@@ -51,39 +32,28 @@ type ErrorUnknownCredential struct {
 	Err *Error
 }
 
-func (e *ErrorUnknownCredential) Error() string {
-	return e.Err.Error()
-}
+func (e *ErrorUnknownCredential) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *ErrorUnknownCredential) Unwrap() error {
-	return e.Err
-}
+func (e *ErrorUnknownCredential) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
 func (e *ErrorUnknownCredential) copy() ErrorUnknownCredential {
-	err := *e.Err
-
-	return ErrorUnknownCredential{Err: &err}
+	_ = "STUB: not implemented"
+	return *new(ErrorUnknownCredential)
 }
 
 func (e *ErrorUnknownCredential) WithDetails(details string) *ErrorUnknownCredential {
-	err := e.copy()
-	err.Err.Details = details
-
-	return &err
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (e *ErrorUnknownCredential) WithInfo(info string) *ErrorUnknownCredential {
-	err := e.copy()
-	err.Err.DevInfo = info
-
-	return &err
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (e *ErrorUnknownCredential) WithError(err error) *ErrorUnknownCredential {
-	errCopy := e.copy()
-	errCopy.Err.Err = err
-
-	return &errCopy
+	_ = "STUB: not implemented"
+	return nil
 }
 
 var (

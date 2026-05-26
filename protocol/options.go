@@ -87,10 +87,8 @@ type CredentialDescriptor struct {
 }
 
 func (c CredentialDescriptor) SignalUnknownCredential(rpid string) *SignalUnknownCredential {
-	return &SignalUnknownCredential{
-		CredentialID: c.CredentialID,
-		RPID:         rpid,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CredentialType represents the PublicKeyCredentialType IDL and is used with the CredentialDescriptor IDL.
@@ -270,13 +268,8 @@ const (
 )
 
 func (a *PublicKeyCredentialRequestOptions) GetAllowedCredentialIDs() [][]byte {
-	var allowedCredentialIDs = make([][]byte, len(a.AllowedCredentials))
-
-	for i, credential := range a.AllowedCredentials {
-		allowedCredentialIDs[i] = credential.CredentialID
-	}
-
-	return allowedCredentialIDs
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Extensions is a generic type for WebAuthn extensions. The actual contents are defined by each individual extension.
